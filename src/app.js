@@ -1,13 +1,50 @@
-#!/usr/bin/env node
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
-/**
- * Module dependencies.
- */
 
-var app = require('../app');
-var debug = require('debug')('jhkserver:server');
-var http = require('http');
+import indexRouter from './routes/index';
+import usersRouter from './routes/users';
+import adminRouter from './routes/admin';
+import cors from 'cors';
 
+const app = express();
+app.use(cors())
+
+// view engine setup
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/admin', adminRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.send('error');
+});
+
+import debuger from 'debug';
+import http from 'http';
+
+const debug = debuger('jhkserver:server');
 /**
  * Get port from environment and store in Express.
  */
@@ -88,3 +125,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+export default app;
