@@ -6,6 +6,5 @@
     "user": "postgres",
     "password": "A1s2d34F",
     "database": "jhk"
-  },
-  "apiUrl": "http://localhost:3000/"
+  }
 }
